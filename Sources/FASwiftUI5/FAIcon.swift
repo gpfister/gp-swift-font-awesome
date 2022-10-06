@@ -1,6 +1,5 @@
 //
-//  FAIcon.swift
-//  link-swiftui
+//  swift-font-awesome
 //
 //  Created by Matt Maddux on 10/1/19.
 //  Copyright © 2019 Matt Maddux. All rights reserved.
@@ -9,7 +8,9 @@
 import SwiftUI
 
 // ======================================================= //
+
 // MARK: - Style Enum
+
 // ======================================================= //
 
 public enum FAStyle: String, Codable {
@@ -18,7 +19,7 @@ public enum FAStyle: String, Codable {
     case solid
     case brands
     case duotone
-    
+
     var weight: Font.Weight {
         switch self {
         case .light:
@@ -32,14 +33,16 @@ public enum FAStyle: String, Codable {
 }
 
 // ======================================================= //
+
 // MARK: - Collection Enum
+
 // ======================================================= //
 
 enum FACollection: String {
     case pro = "Font Awesome 5 Pro"
     case free = "Font Awesome 5 Free"
     case brands = "Font Awesome 5 Brands"
-    
+
     static var availableCollection: [FACollection] {
         var result = [FACollection]()
         if FACollection.isAvailable(collection: .pro) {
@@ -53,7 +56,7 @@ enum FACollection: String {
         }
         return result
     }
-    
+
     static func isAvailable(collection: FACollection) -> Bool {
         #if os(iOS)
             return UIFont.familyNames.contains(collection.rawValue)
@@ -64,22 +67,24 @@ enum FACollection: String {
 }
 
 // ======================================================= //
+
 // MARK: - Icon Struct
+
 // ======================================================= //
 
 public struct FAIcon: Identifiable, Decodable, Comparable {
-    
     // ======================================================= //
+
     // MARK: - Properties
+
     // ======================================================= //
-    
+
     public var id: String?
     public var label: String
     public var unicode: String
     public var styles: [FAStyle]
     public var searchTerms: [String]
-    
-    
+
     var collection: FACollection {
         if styles.contains(.brands) {
             return .brands
@@ -89,23 +94,25 @@ public struct FAIcon: Identifiable, Decodable, Comparable {
             return .free
         }
     }
-    
+
     var unicodeString: String {
-        let rawMutable = NSMutableString(string: "\\u\(self.unicode)")
+        let rawMutable = NSMutableString(string: "\\u\(unicode)")
         CFStringTransform(rawMutable, nil, "Any-Hex/Java" as NSString, true)
         return rawMutable as String
     }
-    
+
     // ======================================================= //
+
     // MARK: - Initializer
+
     // ======================================================= //
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         label = try values.decode(String.self, forKey: .label)
         unicode = try values.decode(String.self, forKey: .unicode)
         styles = try values.decode([FAStyle].self, forKey: .styles)
-        
+
         let search = try values.nestedContainer(keyedBy: SearchKeys.self, forKey: .search)
         let rawSearchTerms = try search.decode([RawSearchTerm].self, forKey: .terms)
         searchTerms = [String]()
@@ -113,30 +120,34 @@ public struct FAIcon: Identifiable, Decodable, Comparable {
             searchTerms.append(term.toString())
         }
     }
-    
+
     // ======================================================= //
+
     // MARK: - Coding Keys
+
     // ======================================================= //
-    
+
     public enum CodingKeys: String, CodingKey {
         case label
         case unicode
         case styles
         case search
     }
-    
+
     public enum SearchKeys: String, CodingKey {
         case terms
     }
-    
+
     // ======================================================= //
+
     // MARK: - Decoding Helper Types
+
     // ======================================================= //
-    
+
     enum RawSearchTerm: Decodable {
         case int(Int)
         case string(String)
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
             do {
@@ -149,26 +160,28 @@ public struct FAIcon: Identifiable, Decodable, Comparable {
                 }
             }
         }
-        
+
         func toString() -> String {
             switch self {
-            case .int(let storedInt):
+            case let .int(storedInt):
                 return String(storedInt)
-            case .string(let storedString):
+            case let .string(storedString):
                 return storedString
             }
         }
     }
-    
+
     // ======================================================= //
+
     // MARK: - Comparable
+
     // ======================================================= //
-    
+
     public static func < (lhs: FAIcon, rhs: FAIcon) -> Bool {
-        return lhs.id ?? lhs.label < lhs.id ?? rhs.label
+        lhs.id ?? lhs.label < lhs.id ?? rhs.label
     }
-    
+
     public static func == (lhs: FAIcon, rhs: FAIcon) -> Bool {
-        return lhs.id ?? lhs.label == lhs.id ?? rhs.label
+        lhs.id ?? lhs.label == lhs.id ?? rhs.label
     }
 }

@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -7,19 +7,24 @@ let package = Package(
     name: "FASwiftUI",
     platforms: [
         .iOS(.v13),
-        .macOS(.v10_15)
+        .macOS(.v10_15),
     ],
     products: [
-        // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
-            name: "FASwiftUI",
-            targets: ["FASwiftUI"]),
+            name: "FASwiftUI5",
+            targets: ["FASwiftUI5"]
+        ),
+        .library(
+            name: "FASwiftUI6",
+            targets: ["FASwiftUI6"]
+        ),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "FASwiftUI"
+            name: "FASwiftUI5"
+        ),
+        .target(
+            name: "FASwiftUI6"
         ),
     ]
 )
