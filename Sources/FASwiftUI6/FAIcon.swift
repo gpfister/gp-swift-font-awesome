@@ -68,7 +68,7 @@ enum FACollection: String {
     }
 
     static func isAvailable(collection: FACollection) -> Bool {
-        #if os(iOS)
+        #if os(iOS) || os(watchOS) || os(tvOS)
             return UIFont.familyNames.contains(collection.rawValue)
         #elseif os(macOS)
             return NSFontManager.shared.availableFontFamilies.contains(collection.rawValue)
