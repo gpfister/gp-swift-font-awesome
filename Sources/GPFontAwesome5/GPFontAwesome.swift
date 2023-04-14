@@ -1,7 +1,7 @@
 //
-//  swift-font-awesome
-//  Copyright © 2019-2021 Matt Maddux. MIT License.
-//  Copyright © 2022 Greg PFISTER. MIT License.
+//  gp-swift-font-awesome
+//  Copyright © 2019-2021, Matt Maddux. MIT License.
+//  Copyright © 2022-2023, Greg PFISTER. MIT License.
 //
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -14,14 +14,14 @@
 
 import SwiftUI
 
-public class FontAwesome {
+public class GPFontAwesome {
     // ======================================================= //
 
     // MARK: - Shared Instance
 
     // ======================================================= //
 
-    public static var shared: FontAwesome = .init()
+    public static var shared: GPFontAwesome = .init()
 
     // ======================================================= //
 
@@ -29,7 +29,7 @@ public class FontAwesome {
 
     // ======================================================= //
 
-    public private(set) var store: [String: FAIcon]
+    public private(set) var store: [String: GPFAIcon]
 
     // ======================================================= //
 
@@ -42,7 +42,7 @@ public class FontAwesome {
         let jsonString = try! String(contentsOf: fileURL, encoding: .utf8)
         let jsonData = jsonString.data(using: .utf8)!
         let decoder = JSONDecoder()
-        store = try! decoder.decode([String: FAIcon].self, from: jsonData)
+        store = try! decoder.decode([String: GPFAIcon].self, from: jsonData)
         for key in store.keys {
             store[key]!.id = key
         }
@@ -54,11 +54,11 @@ public class FontAwesome {
 
     // ======================================================= //
 
-    public func icon(byName name: String) -> FAIcon? {
+    public func icon(byName name: String) -> GPFAIcon? {
         store[name.lowercased()]
     }
 
-    public func search(query: String) -> [String: FAIcon] {
+    public func search(query: String) -> [String: GPFAIcon] {
         let filtered = store.filter {
             if $0.key.contains(query) {
                 return true

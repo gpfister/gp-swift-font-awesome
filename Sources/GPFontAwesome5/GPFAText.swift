@@ -1,7 +1,7 @@
 //
-//  swift-font-awesome
-//  Copyright © 2019-2021 Matt Maddux. MIT License.
-//  Copyright © 2022 Greg PFISTER. MIT License.
+//  gp-swift-font-awesome
+//  Copyright © 2019-2021, Matt Maddux. MIT License.
+//  Copyright © 2022-2023, Greg PFISTER. MIT License.
 //
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -14,34 +14,34 @@
 
 import SwiftUI
 
-public struct FAText: View {
+public struct GPFAText: View {
     var iconName: String
-    private var icon: FAIcon
+    private var icon: GPFAIcon
     var size: CGFloat
-    var style: FAStyle
+    var style: GPFAStyle
     private var weight: Font.Weight {
         style.weight
     }
 
-    public init(iconName: String, size: CGFloat, style: FAStyle? = nil) {
+    public init(iconName: String, size: CGFloat, style: GPFAStyle? = nil) {
         self.size = size
         self.style = style ?? .regular
         self.iconName = iconName.hasPrefix("fa-") ? String(iconName.dropFirst(3)) : iconName
 
-        if let icon = FontAwesome.shared.icon(byName: self.iconName) {
+        if let icon = GPFontAwesome.shared.icon(byName: self.iconName) {
             self.icon = icon
         } else {
-            icon = FontAwesome.shared.icon(byName: "question-circle")!
+            icon = GPFontAwesome.shared.icon(byName: "question-circle")!
             self.style = .regular
-            print("FASwiftUI: Icon \"\(iconName)\" not found. Check list at https://fontawesome.com/icons for set availability.")
+            print("GPFontAwesome5: Icon \"\(iconName)\" not found. Check list at https://fontawesome.com/icons for set availability.")
         }
 
         if !icon.styles.contains(self.style) {
             let fallbackStyle = icon.styles.first!
             if fallbackStyle != .brands, style != nil {
-                print("FASwiftUI: Style \"\(style ?? .regular)\" not available for icon \"\(iconName)\", using \"\(fallbackStyle)\". Check list at https://fontawesome.com/icons for set availability.")
+                print("GPFontAwesome5: Style \"\(style ?? .regular)\" not available for icon \"\(iconName)\", using \"\(fallbackStyle)\". Check list at https://fontawesome.com/icons for set availability.")
             } else if self.style != .regular, style != nil {
-                print("FASwiftUI: Icon \"\(iconName)\" is part of the brands set and doesn't support alternate styles. Check list at https://fontawesome.com/icons for set availability.")
+                print("GPFontAwesome5: Icon \"\(iconName)\" is part of the brands set and doesn't support alternate styles. Check list at https://fontawesome.com/icons for set availability.")
             }
             self.style = fallbackStyle
         }

@@ -1,7 +1,7 @@
 //
-//  swift-font-awesome
-//  Copyright © 2019-2021 Matt Maddux. MIT License.
-//  Copyright © 2022 Greg PFISTER. MIT License.
+//  gp-swift-font-awesome
+//  Copyright © 2019-2021, Matt Maddux. MIT License.
+//  Copyright © 2022-2023, Greg PFISTER. MIT License.
 //
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,18 +20,24 @@ import SwiftUI
 
 // ======================================================= //
 
-public enum FAStyle: String, Codable {
+public enum GPFAStyle: String, Codable {
+    case thin
     case light
     case regular
     case solid
+    case sharp
     case brands
     case duotone
 
     var weight: Font.Weight {
         switch self {
+        case .thin:
+            return .thin
         case .light:
             return .light
         case .solid:
+            return .heavy
+        case .sharp:
             return .heavy
         default:
             return .regular
@@ -45,29 +51,33 @@ public enum FAStyle: String, Codable {
 
 // ======================================================= //
 
-enum FACollection: String {
-    case pro = "Font Awesome 5 Pro"
-    case free = "Font Awesome 5 Free"
-    case brands = "Font Awesome 5 Brands"
+enum GPFACollection: String {
+    case free = "Font Awesome 6 Free"
+    case pro = "Font Awesome 6 Pro"
+    case sharp = "Font Awesome 6 Sharp"
+    case brands = "Font Awesome 6 Brands"
 
-    static var availableCollection: [FACollection] {
-        var result = [FACollection]()
-        if FACollection.isAvailable(collection: .pro) {
+    static var availableCollection: [GPFACollection] {
+        var result = [GPFACollection]()
+        if GPFACollection.isAvailable(collection: .pro) {
             result.append(.pro)
         }
-        if FACollection.isAvailable(collection: .free) {
+        if GPFACollection.isAvailable(collection: .sharp) {
+            result.append(.sharp)
+        }
+        if GPFACollection.isAvailable(collection: .free) {
             result.append(.free)
         }
-        if FACollection.isAvailable(collection: .brands) {
+        if GPFACollection.isAvailable(collection: .brands) {
             result.append(.brands)
         }
         return result
     }
 
-    static func isAvailable(collection: FACollection) -> Bool {
-        #if os(iOS)
+    static func isAvailable(collection: GPFACollection) -> Bool {
+        #if os(iOS) || os(watchOS) || os(tvOS)
             return UIFont.familyNames.contains(collection.rawValue)
-        #elseif os(OSX)
+        #elseif os(macOS)
             return NSFontManager.shared.availableFontFamilies.contains(collection.rawValue)
         #endif
     }
@@ -79,7 +89,7 @@ enum FACollection: String {
 
 // ======================================================= //
 
-public struct FAIcon: Identifiable, Decodable, Comparable {
+public struct GPFAIcon: Identifiable, Decodable, Comparable {
     // ======================================================= //
 
     // MARK: - Properties
@@ -89,13 +99,15 @@ public struct FAIcon: Identifiable, Decodable, Comparable {
     public var id: String?
     public var label: String
     public var unicode: String
-    public var styles: [FAStyle]
+    public var styles: [GPFAStyle]
     public var searchTerms: [String]
 
-    var collection: FACollection {
+    var collection: GPFACollection {
         if styles.contains(.brands) {
             return .brands
-        } else if FACollection.isAvailable(collection: .pro) {
+        } else if styles.contains(.brands) {
+            return .sharp
+        } else if GPFACollection.isAvailable(collection: .pro) {
             return .pro
         } else {
             return .free
@@ -118,7 +130,7 @@ public struct FAIcon: Identifiable, Decodable, Comparable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         label = try values.decode(String.self, forKey: .label)
         unicode = try values.decode(String.self, forKey: .unicode)
-        styles = try values.decode([FAStyle].self, forKey: .styles)
+        styles = try values.decode([GPFAStyle].self, forKey: .styles)
 
         let search = try values.nestedContainer(keyedBy: SearchKeys.self, forKey: .search)
         let rawSearchTerms = try search.decode([RawSearchTerm].self, forKey: .terms)
@@ -184,11 +196,11 @@ public struct FAIcon: Identifiable, Decodable, Comparable {
 
     // ======================================================= //
 
-    public static func < (lhs: FAIcon, rhs: FAIcon) -> Bool {
+    public static func < (lhs: GPFAIcon, rhs: GPFAIcon) -> Bool {
         lhs.id ?? lhs.label < lhs.id ?? rhs.label
     }
 
-    public static func == (lhs: FAIcon, rhs: FAIcon) -> Bool {
+    public static func == (lhs: GPFAIcon, rhs: GPFAIcon) -> Bool {
         lhs.id ?? lhs.label == lhs.id ?? rhs.label
     }
 }

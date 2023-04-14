@@ -1,7 +1,8 @@
 # MIT License
 
-Copyright (c) 2019-2021, Matt Maddux.
-Copyright (c) 2022, Greg PFISTER.
+`Copyright (c) 2019-2021, Matt Maddux. MIT License`
+
+`Copyright (c) 2022-2023, Greg PFISTER. MIT License`
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
