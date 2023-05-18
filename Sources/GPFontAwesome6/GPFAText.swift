@@ -18,22 +18,27 @@ public struct GPFAText: View {
     let iconName: String
     let size: CGFloat
     let style: GPFAStyle
+    let collection: GPFACollection
 
     private let icon: GPFAIcon
 
-    public init(iconName: String, size: CGFloat, style: GPFAStyle? = nil) {
+    public init(iconName: String, size: CGFloat, collection: GPFACollection?, style: GPFAStyle?) {
         self.size = size
         self.iconName = iconName.hasPrefix("fa-") ? String(iconName.dropFirst(3)) : iconName
 
         if let icon = GPFontAwesome.shared.icon(byName: self.iconName) {
             self.icon = icon
+            if let collection, !icon.collections.contains(collection) {
+                let fallbackCollection = icon.collections.first!
+                if collection != .brands {
+                    print("GPFontAwesome6: Icon \"\(iconName)\" is not part of the \"\(collection)\" collection. Fallbacks style \"\(fallbackCollection)\" will be used instead. Check list at https://fontawesome.com/icons for set availability.")
+                }
+                self.collection = fallbackCollection
+            } else {
+                self.collection = collection ?? (icon.collections.contains(.brands) ? .brands : icon.collections.contains(.pro) ? .pro : icon.collections.first!)
+            }
             if let style, !icon.styles.contains(style) {
                 let fallbackStyle = icon.styles.first!
-                if fallbackStyle != .brands {
-                    print("GPFontAwesome6: Style \"\(style)\" not available for icon \"\(iconName)\", using \"\(fallbackStyle)\". Check list at https://fontawesome.com/icons for set availability.")
-                } else if style != .regular {
-                    print("GPFontAwesome6: Icon \"\(iconName)\" is part of the brands set and doesn't support alternate styles. Check list at https://fontawesome.com/icons for set availability.")
-                }
                 self.style = fallbackStyle
             } else {
                 self.style = style ?? .regular
@@ -41,17 +46,14 @@ public struct GPFAText: View {
         } else {
             icon = GPFontAwesome.shared.icon(byName: "circle-question")!
             self.style = .regular
+            self.collection = GPFACollection.isAvailable(collection: .pro) ? .pro : .free
             print("GPFontAwesome6: Icon \"\(iconName)\" not found. Check list at https://fontawesome.com/icons for set availability.")
         }
     }
 
-    private var weight: Font.Weight {
-        style.weight
-    }
-
     public var body: some View {
         Text(icon.unicodeString)
-            .font(Font.custom(icon.collection.rawValue, size: size))
-            .fontWeight(weight)
+            .font(Font.custom(collection.rawValue, size: size))
+            .fontWeight(style.weight)
     }
 }

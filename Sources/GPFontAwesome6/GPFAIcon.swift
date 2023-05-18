@@ -25,9 +25,6 @@ public enum GPFAStyle: String, Codable {
     case light
     case regular
     case solid
-    case sharp
-    case brands
-    case duotone
 
     var weight: Font.Weight {
         switch self {
@@ -36,8 +33,6 @@ public enum GPFAStyle: String, Codable {
         case .light:
             return .light
         case .solid:
-            return .heavy
-        case .sharp:
             return .heavy
         default:
             return .regular
@@ -51,11 +46,16 @@ public enum GPFAStyle: String, Codable {
 
 // ======================================================= //
 
-enum GPFACollection: String {
+public enum GPFACollection: String, Codable {
     case free = "Font Awesome 6 Free"
     case pro = "Font Awesome 6 Pro"
     case sharp = "Font Awesome 6 Sharp"
     case brands = "Font Awesome 6 Brands"
+
+    public static var `default`: GPFACollection {
+        if GPFACollection.isAvailable(collection: .pro) { return .pro }
+        else { return .free }
+    }
 
     static var availableCollection: [GPFACollection] {
         var result = [GPFACollection]()
@@ -100,19 +100,18 @@ public struct GPFAIcon: Identifiable, Decodable, Comparable {
     public var label: String
     public var unicode: String
     public var styles: [GPFAStyle]
+    public var collections: [GPFACollection]
     public var searchTerms: [String]
 
-    var collection: GPFACollection {
-        if styles.contains(.brands) {
-            return .brands
-        } else if styles.contains(.brands) {
-            return .sharp
-        } else if GPFACollection.isAvailable(collection: .pro) {
-            return .pro
-        } else {
-            return .free
-        }
-    }
+//    var collection: GPFACollection {
+//        if styles.contains(.brands) {
+//            return .brands
+//        } else if GPFACollection.isAvailable(collection: .pro) {
+//            return .pro
+//        } else {
+//            return .free
+//        }
+//    }
 
     var unicodeString: String {
         let rawMutable = NSMutableString(string: "\\u\(unicode)")
@@ -131,6 +130,7 @@ public struct GPFAIcon: Identifiable, Decodable, Comparable {
         label = try values.decode(String.self, forKey: .label)
         unicode = try values.decode(String.self, forKey: .unicode)
         styles = try values.decode([GPFAStyle].self, forKey: .styles)
+        collections = try values.decode([GPFACollection].self, forKey: .collections)
 
         let search = try values.nestedContainer(keyedBy: SearchKeys.self, forKey: .search)
         let rawSearchTerms = try search.decode([RawSearchTerm].self, forKey: .terms)
@@ -150,6 +150,7 @@ public struct GPFAIcon: Identifiable, Decodable, Comparable {
         case label
         case unicode
         case styles
+        case collections
         case search
     }
 
